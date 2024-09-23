@@ -6,10 +6,21 @@ import Notification from "./components/Notification";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
-	const [errorMessage, setErrorMessage] = useState(null);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [user, setUser] = useState(null);
+
+	const [newTitle, setNewTitle] = useState("");
+	const [newAuthor, setNewAuthor] = useState("");
+	const [newUrl, setNewUrl] = useState("");
+	const [notification, setNotification] = useState({ message: null, type: "" });
+
+	const displayNotification = (message, type = "success") => {
+		setNotification({ message, type });
+		setTimeout(() => {
+			setNotification({ message: null, type: "" });
+		}, 5000);
+	};
 
 	useEffect(() => {
 		if (user) {
@@ -31,19 +42,16 @@ const App = () => {
 		try {
 			const user = await loginService.login({ username, password });
 			window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
-			console.log(user.token);
 			blogService.setToken(user.token);
 			setUser(user);
 			setUsername("");
 			setPassword("");
+			displayNotification("Logged in successfully!", "success");
 		} catch (exception) {
-			setErrorMessage("Wrong credentials");
-			setTimeout(() => {
-				setErrorMessage(null);
-			}, 5000);
+			displayNotification("Wrong credentials", "error");
 		}
-		console.log("Successful login");
 	};
+
 	const handleLogout = () => {
 		window.localStorage.removeItem("loggedNoteappUser");
 		setUser(null);
@@ -74,9 +82,65 @@ const App = () => {
 		</form>
 	);
 
+	const addBlog = (event) => {
+		event.preventDefault();
+		const blogObject = {
+			title: newTitle,
+			author: newAuthor,
+			url: newUrl,
+			likes: 0,
+		};
+
+		blogService
+			.create(blogObject)
+			.then((returnedBlog) => {
+				setBlogs(blogs.concat(returnedBlog));
+				setNewTitle("");
+				setNewAuthor("");
+				setNewUrl("");
+				displayNotification(
+					`Blog '${returnedBlog.title}' added successfully!`,
+					"success"
+				);
+			})
+			.catch((error) => {
+				displayNotification(
+					"Failed to add the blog. Please try again.",
+					"error"
+				);
+			});
+	};
+
+	const blogForm = () => (
+		<form onSubmit={addBlog}>
+			<div>
+				Title:
+				<input
+					value={newTitle}
+					onChange={({ target }) => setNewTitle(target.value)}
+				/>
+			</div>
+			<div>
+				Author:
+				<input
+					value={newAuthor}
+					onChange={({ target }) => setNewAuthor(target.value)}
+				/>
+			</div>
+			<div>
+				URL:
+				<input
+					value={newUrl}
+					onChange={({ target }) => setNewUrl(target.value)}
+				/>
+			</div>
+			<button type="submit">create</button>
+		</form>
+	);
+
 	return (
 		<div>
-			<Notification message={errorMessage} />
+			<Notification message={notification.message} type={notification.type} />
 			{user === null ? (
 				loginForm()
 			) : (
@@ -86,6 +150,10 @@ const App = () => {
 					<button type="button" onClick={handleLogout}>
 						Log out
 					</button>
+					<div>
+						<h2>Create new</h2>
+						{blogForm()}
+					</div>
 					{blogs.map((blog) => (
 						<Blog key={blog.id} blog={blog} />
 					))}
