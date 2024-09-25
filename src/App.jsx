@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notification from "./components/Notification";
+import BlogForm from "./components/BlogForm";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
@@ -14,6 +15,7 @@ const App = () => {
 	const [newAuthor, setNewAuthor] = useState("");
 	const [newUrl, setNewUrl] = useState("");
 	const [notification, setNotification] = useState({ message: null, type: "" });
+	const [blogVisible, setBlogVisible] = useState(false);
 
 	const displayNotification = (message, type = "success") => {
 		setNotification({ message, type });
@@ -111,32 +113,50 @@ const App = () => {
 			});
 	};
 
-	const blogForm = () => (
-		<form onSubmit={addBlog}>
+	const blogForm = () => {
+		const hideWhenVisible = { display: blogVisible ? "none" : "" };
+		const showWhenVisible = { display: blogVisible ? "" : "none" };
+
+		return (
 			<div>
-				Title:
-				<input
-					value={newTitle}
-					onChange={({ target }) => setNewTitle(target.value)}
-				/>
+				<div style={hideWhenVisible}>
+					<button onClick={() => setBlogVisible(true)}>New Blog</button>
+				</div>
+				<div style={showWhenVisible}>
+					<BlogForm
+						newTitle={newTitle}
+						newAuthor={newAuthor}
+						newUrl={newUrl}
+						handleTitleChange={({ target }) => setNewTitle(target.value)}
+						handleAuthorChange={({ target }) => setNewAuthor(target.value)}
+						handleUrlChange={({ target }) => setNewUrl(target.value)}
+						handleAddBlog={addBlog}
+					/>
+					<button onClick={() => setBlogVisible(false)}>cancel</button>
+				</div>
 			</div>
-			<div>
-				Author:
-				<input
-					value={newAuthor}
-					onChange={({ target }) => setNewAuthor(target.value)}
-				/>
-			</div>
-			<div>
-				URL:
-				<input
-					value={newUrl}
-					onChange={({ target }) => setNewUrl(target.value)}
-				/>
-			</div>
-			<button type="submit">create</button>
-		</form>
-	);
+		);
+	};
+
+	const handleLikeUpdate = (updatedBlog) => {
+		setBlogs(
+			blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+		);
+	};
+
+	const handleDeleteBlog = async (id) => {
+		try {
+			await blogService.deleteBlog(id);
+			setBlogs(blogs.filter((blog) => blog.id !== id));
+			displayNotification("Blog removed successfully", "success");
+		} catch (error) {
+			displayNotification(
+				"Failed to delete the blog. Please try again.",
+				"error"
+			);
+		}
+	};
+
 
 	return (
 		<div>
@@ -154,9 +174,17 @@ const App = () => {
 						<h2>Create new</h2>
 						{blogForm()}
 					</div>
-					{blogs.map((blog) => (
-						<Blog key={blog.id} blog={blog} />
-					))}
+					{blogs
+						.sort((a, b) => b.likes - a.likes)
+						.map((blog) => (
+							<Blog
+								key={blog.id}
+								blog={blog}
+								handleLikeUpdate={handleLikeUpdate}
+								deleteBlogID={handleDeleteBlog}
+								user={user}
+							/>
+						))}
 				</div>
 			)}
 		</div>
