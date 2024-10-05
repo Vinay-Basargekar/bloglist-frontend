@@ -1,20 +1,19 @@
-// Notification.js
 const Notification = ({ message, type }) => {
 	if (message === null) {
 		return null;
 	}
 
-	const notificationStyle = {
-		color: type === "success" ? "green" : "red",
-		background: "lightgrey",
-		fontSize: 16,
-		borderStyle: "solid",
-		borderRadius: 5,
-		padding: 10,
-		marginBottom: 10,
-	};
-
-	return <div style={notificationStyle}>{message}</div>;
+	return (
+		<div
+			className={`p-4 mb-4 text-sm text-white rounded border ${
+				type === "success"
+					? "bg-green-500 border-green-600"
+					: "bg-red-500 border-red-600"
+			}`}
+		>
+			{message}
+		</div>
+	);
 };
 
 export default Notification;

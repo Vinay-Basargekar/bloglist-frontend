@@ -61,26 +61,33 @@ const App = () => {
 	};
 
 	const loginForm = () => (
-		<form onSubmit={handleLogin}>
+		<form onSubmit={handleLogin} className="space-y-4">
 			<div>
-				username
+				<label className="block mb-2 font-bold">Username</label>
 				<input
 					type="text"
 					value={username}
 					name="Username"
 					onChange={({ target }) => setUsername(target.value)}
+					className="w-full p-2 border rounded"
 				/>
 			</div>
 			<div>
-				password
+				<label className="block mb-2 font-bold">Password</label>
 				<input
 					type="password"
 					value={password}
 					name="Password"
 					onChange={({ target }) => setPassword(target.value)}
+					className="w-full p-2 border rounded"
 				/>
 			</div>
-			<button type="submit">login</button>
+			<button
+				type="submit"
+				className="bg-blue-500 text-white py-2 px-4 rounded"
+			>
+				Login
+			</button>
 		</form>
 	);
 
@@ -120,7 +127,12 @@ const App = () => {
 		return (
 			<div>
 				<div style={hideWhenVisible}>
-					<button onClick={() => setBlogVisible(true)}>New Blog</button>
+					<button
+						className="bg-green-500 text-white py-2 px-4 rounded"
+						onClick={() => setBlogVisible(true)}
+					>
+						New Blog
+					</button>
 				</div>
 				<div style={showWhenVisible}>
 					<BlogForm
@@ -132,7 +144,12 @@ const App = () => {
 						handleUrlChange={({ target }) => setNewUrl(target.value)}
 						handleAddBlog={addBlog}
 					/>
-					<button onClick={() => setBlogVisible(false)}>cancel</button>
+					<button
+						className="bg-red-500 text-white py-2 px-4 rounded mt-4"
+						onClick={() => setBlogVisible(false)}
+					>
+						Cancel
+					</button>
 				</div>
 			</div>
 		);
@@ -157,21 +174,28 @@ const App = () => {
 		}
 	};
 
-
 	return (
-		<div>
+		<div className="max-w-4xl mx-auto p-4">
 			<Notification message={notification.message} type={notification.type} />
 			{user === null ? (
 				loginForm()
 			) : (
 				<div>
-					<h2>blogs</h2>
-					<p>{user.name} logged-in</p>
-					<button type="button" onClick={handleLogout}>
-						Log out
-					</button>
-					<div>
-						<h2>Create new</h2>
+					<div className="flex justify-between">
+						<h2 className="text-2xl font-bold mb-4">Blogs</h2>
+						<div className="flex-col">
+							<p>{user.name} logged-in</p>
+							<button
+								type="button"
+								className="bg-gray-800 text-white py-2 px-4 rounded mt-2"
+								onClick={handleLogout}
+							>
+								Log out
+							</button>
+						</div>
+					</div>
+					<div className="my-6">
+						<h2 className="text-xl font-bold mb-4">Create New</h2>
 						{blogForm()}
 					</div>
 					{blogs
