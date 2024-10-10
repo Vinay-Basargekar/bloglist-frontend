@@ -1,9 +1,20 @@
 import { useState, useEffect } from "react";
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	useLocation,
+} from "react-router-dom";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
+import Navbar from "./components/Navbar";
+import Home from "./components/Home";
+import Profile from "./components/Profile";
+import Breadcrumb from "./components/Breadcrumb";
+import Footer from "./components/Footer";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
@@ -16,6 +27,22 @@ const App = () => {
 	const [newUrl, setNewUrl] = useState("");
 	const [notification, setNotification] = useState({ message: null, type: "" });
 	const [blogVisible, setBlogVisible] = useState(false);
+	const location = useLocation(); // Get current location
+
+    // Function to determine breadcrumb paths based on the current route
+    const getBreadcrumbPaths = () => {
+        const paths = [
+            { name: "Home", link: "/" },
+        ];
+
+        if (location.pathname === "/Blogs") {
+            paths.push({ name: "Blogs", link: "/Blogs" });
+        } else if (location.pathname === "/Profile") {
+            paths.push({ name: "Profile", link: "/Profile" });
+        }
+
+        return paths;
+    };
 
 	const displayNotification = (message, type = "success") => {
 		setNotification({ message, type });
@@ -61,30 +88,39 @@ const App = () => {
 	};
 
 	const loginForm = () => (
-		<form onSubmit={handleLogin} className="space-y-4">
+		<form
+			onSubmit={handleLogin}
+			className="space-y-6 bg-white shadow-md px-8 pt-6 pb-8 mb-4"
+		>
 			<div>
-				<label className="block mb-2 font-bold">Username</label>
+				<label className="block text-gray-700 text-sm font-bold mb-2">
+					Username
+				</label>
 				<input
 					type="text"
 					value={username}
 					name="Username"
 					onChange={({ target }) => setUsername(target.value)}
-					className="w-full p-2 border rounded"
+					className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+					placeholder="Enter your username"
 				/>
 			</div>
 			<div>
-				<label className="block mb-2 font-bold">Password</label>
+				<label className="block text-gray-700 text-sm font-bold mb-2">
+					Password
+				</label>
 				<input
 					type="password"
 					value={password}
 					name="Password"
 					onChange={({ target }) => setPassword(target.value)}
-					className="w-full p-2 border rounded"
+					className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+					placeholder="Enter your password"
 				/>
 			</div>
 			<button
 				type="submit"
-				className="bg-blue-500 text-white py-2 px-4 rounded"
+				className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
 			>
 				Login
 			</button>
@@ -175,40 +211,41 @@ const App = () => {
 	};
 
 	return (
-		<div className="max-w-4xl mx-auto p-4">
+		<div>
 			<Notification message={notification.message} type={notification.type} />
 			{user === null ? (
 				loginForm()
 			) : (
 				<div>
-					<div className="flex justify-between">
-						<h2 className="text-2xl font-bold mb-4">Blogs</h2>
-						<div className="flex-col">
-							<p>{user.name} logged-in</p>
-							<button
-								type="button"
-								className="bg-gray-800 text-white py-2 px-4 rounded mt-2"
-								onClick={handleLogout}
-							>
-								Log out
-							</button>
-						</div>
-					</div>
-					<div className="my-6">
-						<h2 className="text-xl font-bold mb-4">Create New</h2>
-						{blogForm()}
-					</div>
-					{blogs
-						.sort((a, b) => b.likes - a.likes)
-						.map((blog) => (
-							<Blog
-								key={blog.id}
-								blog={blog}
-								handleLikeUpdate={handleLikeUpdate}
-								deleteBlogID={handleDeleteBlog}
-								user={user}
+					<Navbar user={user} handleLogout={handleLogout} />
+					<div className="max-w-4xl mx-auto px-4">
+						<Breadcrumb paths={getBreadcrumbPaths()} />
+						<Routes>
+							<Route path="/" element={<Home />} />
+							<Route
+								path="/Blogs"
+								element={
+									<div className="my-6">
+										<h2 className="text-xl font-bold mb-4">Create New</h2>
+										{blogForm()}
+										{blogs
+											.sort((a, b) => b.likes - a.likes)
+											.map((blog) => (
+												<Blog
+													key={blog.id}
+													blog={blog}
+													handleLikeUpdate={handleLikeUpdate}
+													deleteBlogID={handleDeleteBlog}
+													user={user}
+												/>
+											))}
+									</div>
+								}
 							/>
-						))}
+							<Route path="/Profile" element={<Profile user={user} />} />
+						</Routes>
+					</div>
+					<Footer/>
 				</div>
 			)}
 		</div>

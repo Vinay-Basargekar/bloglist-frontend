@@ -29,49 +29,53 @@ const Blog = ({ blog, handleLikeUpdate, deleteBlogID, user }) => {
 	};
 
 	return (
-		<div className="p-4 border border-gray-300 rounded-lg mb-4">
+		<div className="p-6 bg-white text-black rounded-lg shadow-md mb-6 hover:bg-gray-100">
 			<div className="flex justify-between items-center">
 				<div>
-					<strong>{blog.title}</strong> by {blog.author}
+					<h3 className="text-xl font-semibold">{blog.title}</h3>
+					<p className="text-gray-400">by {blog.author}</p>
 				</div>
 				<button
-					className="text-blue-500 hover:underline"
+					className="text-blue-500 font-semibold hover:underline focus:outline-none"
 					onClick={toggleVisibility}
 				>
 					{visible ? "Hide" : "View"}
 				</button>
 			</div>
+
 			{visible && (
-				<div className="mt-2">
+				<div className="mt-4 space-y-3">
 					<p>
 						<strong>URL:</strong>{" "}
 						<a
 							href={blog.url}
-							className="text-blue-600 hover:underline"
+							className="text-blue-400 underline hover:text-blue-600 transition"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
 							{blog.url}
 						</a>
 					</p>
-					<p>
-						<strong>Likes:</strong> {blog.likes}{" "}
+					<div className="flex items-center space-x-2">
+						<p>
+							<strong>Likes:</strong> {blog.likes}
+						</p>
 						<button
-							className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700"
+							className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 focus:outline-none"
 							onClick={likeBlog}
 						>
 							Like
 						</button>
-					</p>
+					</div>
 					<p>
 						<strong>Author:</strong> {blog.author}
 					</p>
 					{user.username === blog.user.username && (
 						<button
-							className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700"
+							className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 focus:outline-none"
 							onClick={confirmAndDelete}
 						>
-							remove
+							Remove
 						</button>
 					)}
 				</div>

@@ -32,7 +32,7 @@ const update = async (id, updatedObject) => {
 		headers: { Authorization: token },
 	};
 	const response = await axios.put(`${baseUrl}/${id}`, updatedObject, config);
-	console.log(response);
+	// console.log(response);
 	return response.data;
 };
 
