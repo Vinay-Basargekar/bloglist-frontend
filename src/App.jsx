@@ -15,6 +15,8 @@ import Home from "./components/Home";
 import Profile from "./components/Profile";
 import Breadcrumb from "./components/Breadcrumb";
 import Footer from "./components/Footer";
+import BlogPage from "./components/BlogPage";
+import Modal from "./components/Modal";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
@@ -24,25 +26,30 @@ const App = () => {
 
 	const [newTitle, setNewTitle] = useState("");
 	const [newAuthor, setNewAuthor] = useState("");
-	const [newUrl, setNewUrl] = useState("");
+	const [newContent, setNewContent] = useState("");
 	const [notification, setNotification] = useState({ message: null, type: "" });
 	const [blogVisible, setBlogVisible] = useState(false);
 	const location = useLocation(); // Get current location
 
-    // Function to determine breadcrumb paths based on the current route
-    const getBreadcrumbPaths = () => {
-        const paths = [
-            { name: "Home", link: "/" },
-        ];
+	const getBreadcrumbPaths = () => {
+		const paths = [{ name: "Home", link: "/" }];
 
-        if (location.pathname === "/Blogs") {
-            paths.push({ name: "Blogs", link: "/Blogs" });
-        } else if (location.pathname === "/Profile") {
-            paths.push({ name: "Profile", link: "/Profile" });
-        }
+		if (location.pathname === "/Blogs") {
+			paths.push({ name: "Blogs", link: "/Blogs" });
+		} else if (location.pathname.startsWith("/Blogs/")) {
+			const blogId = location.pathname.split("/").pop();
+			const blog = blogs.find((b) => b.id.toString() === blogId);
+			// console.log("Found Blog:", blog);
+			if (blog) {
+				paths.push({ name: "Blogs", link: "/Blogs" });
+				paths.push({ name: blog.title, link: `/Blogs/${blog.id}` });
+			}
+		} else if (location.pathname === "/Profile") {
+			paths.push({ name: "Profile", link: "/Profile" });
+		}
 
-        return paths;
-    };
+		return paths;
+	};
 
 	const displayNotification = (message, type = "success") => {
 		setNotification({ message, type });
@@ -132,7 +139,7 @@ const App = () => {
 		const blogObject = {
 			title: newTitle,
 			author: newAuthor,
-			url: newUrl,
+			content: newContent,
 			likes: 0,
 		};
 
@@ -142,7 +149,8 @@ const App = () => {
 				setBlogs(blogs.concat(returnedBlog));
 				setNewTitle("");
 				setNewAuthor("");
-				setNewUrl("");
+				setNewContent("");
+				setBlogVisible(false);
 				displayNotification(
 					`Blog '${returnedBlog.title}' added successfully!`,
 					"success"
@@ -157,36 +165,30 @@ const App = () => {
 	};
 
 	const blogForm = () => {
-		const hideWhenVisible = { display: blogVisible ? "none" : "" };
-		const showWhenVisible = { display: blogVisible ? "" : "none" };
-
 		return (
-			<div>
-				<div style={hideWhenVisible}>
-					<button
-						className="bg-green-500 text-white py-2 px-4 rounded"
-						onClick={() => setBlogVisible(true)}
-					>
-						New Blog
-					</button>
-				</div>
-				<div style={showWhenVisible}>
-					<BlogForm
-						newTitle={newTitle}
-						newAuthor={newAuthor}
-						newUrl={newUrl}
-						handleTitleChange={({ target }) => setNewTitle(target.value)}
-						handleAuthorChange={({ target }) => setNewAuthor(target.value)}
-						handleUrlChange={({ target }) => setNewUrl(target.value)}
-						handleAddBlog={addBlog}
-					/>
-					<button
-						className="bg-red-500 text-white py-2 px-4 rounded mt-4"
-						onClick={() => setBlogVisible(false)}
-					>
-						Cancel
-					</button>
-				</div>
+			<div className="app-container">
+				<button
+					className="bg-pink-600 text-white py-2 px-4 rounded"
+					onClick={() => setBlogVisible(true)}
+				>
+					New Blog
+				</button>
+
+				{/* Render the Modal if blogVisible is true */}
+				{blogVisible && (
+					<Modal>
+						<BlogForm
+							newTitle={newTitle}
+							newAuthor={newAuthor}
+							newContent={newContent}
+							handleTitleChange={({ target }) => setNewTitle(target.value)}
+							handleAuthorChange={({ target }) => setNewAuthor(target.value)}
+							handleContentChange={({ target }) => setNewContent(target.value)}
+							handleAddBlog={addBlog}
+							onClose={() => setBlogVisible(false)}
+						/>
+					</Modal>
+				)}
 			</div>
 		);
 	};
@@ -211,17 +213,19 @@ const App = () => {
 	};
 
 	return (
-		<div>
+		<div className="flex flex-col min-h-screen ">
 			<Notification message={notification.message} type={notification.type} />
 			{user === null ? (
 				loginForm()
 			) : (
-				<div>
+				<>
 					<Navbar user={user} handleLogout={handleLogout} />
-					<div className="max-w-4xl mx-auto px-4">
+					<div className="flex-grow w-full max-w-4xl mx-auto px-4">
+						{" "}
 						<Breadcrumb paths={getBreadcrumbPaths()} />
 						<Routes>
 							<Route path="/" element={<Home />} />
+							<Route path="/Blogs/:id" element={<BlogPage />} />
 							<Route
 								path="/Blogs"
 								element={
@@ -245,8 +249,8 @@ const App = () => {
 							<Route path="/Profile" element={<Profile user={user} />} />
 						</Routes>
 					</div>
-					<Footer/>
-				</div>
+					<Footer />
+				</>
 			)}
 		</div>
 	);
