@@ -186,11 +186,12 @@ const App = () => {
 				/>
 			) : (
 				<div>
-					<div className="fixed w-full">
+					{/* <div className="fixed w-full"> */}
+					<div className="w-full">
 						<Navbar user={user} handleLogout={handleLogout} />
 						<Breadcrumb paths={getBreadcrumbPaths()} />
 					</div>
-					<div className="flex-grow w-full max-w-4xl mx-auto px-4 mt-32">
+					<div className="flex-grow w-full max-w-4xl mx-auto px-4 mt-10">
 						{" "}
 						<Routes>
 							<Route path="/" element={<Home />} />

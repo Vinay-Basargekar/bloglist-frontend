@@ -12,7 +12,7 @@ const Notification = ({ message, type = "info" }) => {
 
 	return (
 		<div
-			className={`fixed bottom-4 right-4 max-w-sm w-full p-4 mb-4 rounded border-l-4 shadow-md ${notificationStyles[type]} transition-all duration-200 ease-in-out`}
+			className={`fixed z-10 bottom-4 right-4 max-w-sm w-full p-4 mb-4 rounded border-l-4 shadow-md ${notificationStyles[type]} transition-all duration-200 ease-in-out`}
 		>
 			<span className="font-semibold capitalize">{type}:</span> {message}
 		</div>

@@ -31,7 +31,7 @@ const Blog = ({ blog, handleLikeUpdate, deleteBlogID, user }) => {
 		<div>
 			<div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6 mt-4">
 				<Link to={`/Blogs/${blog.id}`} state={{ blog }}>
-					<div className="relative -z-10 bg-white rounded-3xl shadow p-4 pr-8 cursor-pointer ">
+					<div className="relative bg-white rounded-3xl shadow p-4 pr-8 cursor-pointer ">
 						<img
 							src="https://mnsh.me/_next/image?url=https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fmnsh-b3e89.appspot.com%2Fo%2Frenato-ramos-puma-FwMC5JJxt6k-unsplash.jpg%3Falt%3Dmedia%26token%3Df472b9ac-04e0-46ad-a72b-b6ae1868d4e3&w=3840&q=75"
 							alt={blog.title}
@@ -57,7 +57,7 @@ const Blog = ({ blog, handleLikeUpdate, deleteBlogID, user }) => {
 							</div>
 						</div>
 						{/* Delete Button (Only if User Owns the Blog) */}
-						{user.username === blog.user.username && (
+						{/* {user.username === blog.user.username && ( */}
 							<button
 								className="absolute top-4 right-1 text-pink-600 hover:text-pink-700 focus:outline-none"
 								onClick={(e) => {
@@ -67,7 +67,7 @@ const Blog = ({ blog, handleLikeUpdate, deleteBlogID, user }) => {
 							>
 								<AiFillDelete size={24} />
 							</button>
-						)}
+						{/* )} */}
 					</div>
 				</Link>
 			</div>
