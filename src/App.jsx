@@ -213,16 +213,18 @@ const App = () => {
 	};
 
 	return (
-		<div className="flex flex-col min-h-screen ">
+		<div className="flex flex-col min-h-screen">
 			<Notification message={notification.message} type={notification.type} />
 			{user === null ? (
 				loginForm()
 			) : (
-				<>
-					<Navbar user={user} handleLogout={handleLogout} />
-					<div className="flex-grow w-full max-w-4xl mx-auto px-4">
-						{" "}
+				<div>
+					<div className="fixed w-full">
+						<Navbar user={user} handleLogout={handleLogout} />
 						<Breadcrumb paths={getBreadcrumbPaths()} />
+					</div>
+					<div className="flex-grow w-full max-w-4xl mx-auto px-4 mt-32">
+						{" "}
 						<Routes>
 							<Route path="/" element={<Home />} />
 							<Route path="/Blogs/:id" element={<BlogPage />} />
@@ -250,7 +252,7 @@ const App = () => {
 						</Routes>
 					</div>
 					<Footer />
-				</>
+				</div>
 			)}
 		</div>
 	);
