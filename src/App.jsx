@@ -17,6 +17,7 @@ import Breadcrumb from "./components/Breadcrumb";
 import Footer from "./components/Footer";
 import BlogPage from "./components/BlogPage";
 import Modal from "./components/Modal";
+import LoginForm from "./components/loginform";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
@@ -93,46 +94,6 @@ const App = () => {
 		setUser(null);
 		blogService.setToken(null);
 	};
-
-	const loginForm = () => (
-		<form
-			onSubmit={handleLogin}
-			className="space-y-6 bg-white shadow-md px-8 pt-6 pb-8 mb-4"
-		>
-			<div>
-				<label className="block text-gray-700 text-sm font-bold mb-2">
-					Username
-				</label>
-				<input
-					type="text"
-					value={username}
-					name="Username"
-					onChange={({ target }) => setUsername(target.value)}
-					className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
-					placeholder="Enter your username"
-				/>
-			</div>
-			<div>
-				<label className="block text-gray-700 text-sm font-bold mb-2">
-					Password
-				</label>
-				<input
-					type="password"
-					value={password}
-					name="Password"
-					onChange={({ target }) => setPassword(target.value)}
-					className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
-					placeholder="Enter your password"
-				/>
-			</div>
-			<button
-				type="submit"
-				className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
-			>
-				Login
-			</button>
-		</form>
-	);
 
 	const addBlog = (event) => {
 		event.preventDefault();
@@ -216,7 +177,13 @@ const App = () => {
 		<div className="flex flex-col min-h-screen">
 			<Notification message={notification.message} type={notification.type} />
 			{user === null ? (
-				loginForm()
+				<LoginForm
+					username={username}
+					password={password}
+					handleUsernameChange={({ target }) => setUsername(target.value)}
+					handlePasswordChange={({ target }) => setPassword(target.value)}
+					handleSubmit={handleLogin}
+				/>
 			) : (
 				<div>
 					<div className="fixed w-full">
